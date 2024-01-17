@@ -57,17 +57,13 @@ func (Parser) Parse(ref *Reflect.Map[[]string], elem reflect.Type) (r []string) 
 	key := elem.Name() + primaryKey(fields)
 	for _, field := range fields {
 		typ := field.Type
-		switch typ.Kind() {
-		case reflect.Struct:
-			if !belongsTo(elem, field) && !hasOne(key, typ) {
-				continue
-			}
-		case reflect.Slice:
-			typ = field.Type.Elem()
-			if !hasOne(key, typ) {
-				continue
-			}
-		default:
+		if typ.Kind() == reflect.Slice {
+			typ = typ.Elem()
+		}
+		if typ.Kind() != reflect.Struct {
+			continue
+		}
+		if !hasOne(key, typ) && !belongsTo(elem, field) {
 			continue
 		}
 		preloads := ref.MustGetType(typ)
