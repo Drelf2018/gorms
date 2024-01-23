@@ -39,6 +39,10 @@ func (db *DB) Succeed() bool {
 	return db.err == nil
 }
 
+func Found(err error) bool {
+	return !errors.Is(err, gorm.ErrRecordNotFound)
+}
+
 // Found returns whether record is found.
 func (db *DB) Found() bool {
 	return !errors.Is(db.err, gorm.ErrRecordNotFound)
@@ -82,14 +86,26 @@ func (db *DB) GetInstance(r *gorm.DB) *DB {
 	}
 }
 
+func (db *DB) Clone() *DB {
+	return db.GetInstance(db.DB)
+}
+
 func (db *DB) First(dest any, conds ...any) *DB {
 	db.err = db.DB.First(dest, conds...).Error
 	return db
 }
 
+func (db *DB) FirstOK(dest any, conds ...any) bool {
+	return Found(db.DB.First(dest, conds...).Error)
+}
+
 func (db *DB) Find(dest any, conds ...any) *DB {
 	db.err = db.DB.Find(dest, conds...).Error
 	return db
+}
+
+func (db *DB) FindOK(dest any, conds ...any) bool {
+	return Found(db.DB.Find(dest, conds...).Error)
 }
 
 func (db *DB) Select(fields ...string) (tx *DB) {
@@ -168,9 +184,19 @@ func (db *DB) Preload(t any, conds ...any) *DB {
 	return db.PreloadType(t, m).First(t, conds...)
 }
 
+func (db *DB) PreloadOK(t any, conds ...any) bool {
+	m, conds := splitConds(conds)
+	return db.PreloadType(t, m).FirstOK(t, conds...)
+}
+
 func (db *DB) Preloads(t any, conds ...any) *DB {
 	m, conds := splitConds(conds)
 	return db.PreloadType(t, m).Find(t, conds...)
+}
+
+func (db *DB) PreloadsOK(t any, conds ...any) bool {
+	m, conds := splitConds(conds)
+	return db.PreloadType(t, m).FindOK(t, conds...)
 }
 
 func NewDB(file string, gormDB *gorm.DB) *DB {
