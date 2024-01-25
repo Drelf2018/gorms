@@ -79,4 +79,4 @@ func (Parser) Parse(ref *Reflect.Map[[]string], elem reflect.Type) (r []string) 
 	return
 }
 
-var Ref = Reflect.NewMap[Parser](114514, Reflect.SLICEPTRALIAS)
+var Ref = Reflect.NewMap[Parser, []string](114514, Reflect.SLICEPTRALIAS)

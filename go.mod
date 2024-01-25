@@ -3,7 +3,7 @@ module github.com/Drelf2018/gorms
 go 1.18
 
 require (
-	github.com/Drelf2018/TypeGo v0.7.0
+	github.com/Drelf2018/TypeGo v0.7.4
 	github.com/glebarez/sqlite v1.10.0
 	golang.org/x/exp v0.0.0-20240112132812-db7319d0e0e3
 	gorm.io/gorm v1.25.5
